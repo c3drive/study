@@ -1,3 +1,2 @@
-# study
+# study note
 - [Ruby](/Ruby/STUDYNOTE.md)
-- [Ruby](/Ruby)
