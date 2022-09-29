@@ -1,3 +1,6 @@
+---
+---
+
 ## 拡張子
 index.rb
 
@@ -49,3 +52,10 @@ end
 if age != 
 end
 ``` 
+
+## 配列
+```
+names = ["Suzuki", "Kato"]
+puts names # 1つずつ改行区切りで表示
+puts names[0] # Suzukiが表示
+```
