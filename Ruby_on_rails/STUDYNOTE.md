@@ -106,9 +106,9 @@ end
 ### ページの追加（既存のコントローラとは別にアクションを追加する場合）
 例えば既存のhomeとは別の機能を有するためコントロールを分ける
 ```
-例）rails generate controller posts index
+// 例 rails generate controller posts index
 ```
-posts：投稿コントローラの意。
+posts：投稿コントローラの意。  
 index：一覧ページの意。
 
 ##  erb ファイル
@@ -163,7 +163,7 @@ end
 ビューでlink_toメソッドを使うと、`<a href="{URL"}>{リンクテキスト}</a>`に変換される。
 ```
 <%= link_to("{リンクテキスト}", "{URL}") %>
-例）<%= link_to("About", "/about") %>
+// 例 <%= link_to("About", "/about") %>
 ```
 
 ## データベース
@@ -171,7 +171,7 @@ end
 まずは、マイグレーションファイルを作成。
 ```
 rails generate model {テーブル名} {カラム名}:{データ型}
-例）rails g model Post content:text
+// 例 rails g model Post content:text
 ```
 generate：gに略すことが可能。
 Post：モデル名。postsテーブルを作成する際、単数形にする。
@@ -207,7 +207,7 @@ quit
 ```
 
 ### データ保存
-モデルにて、`{モデル名}.new}`でモデルのインスタンスを作成して対応するテーブルに保存する。
+モデルにて、`{モデル名}.new`でモデルのインスタンスを作成して対応するテーブルに保存する。
 ```
 // インスタンス作成
 post = {モデル名}.new(content: "Hello world")

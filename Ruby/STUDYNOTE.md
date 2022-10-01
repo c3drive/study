@@ -1,5 +1,6 @@
 ---
 ---
+# Ruby Study Note
 
 ## 拡張子
 index.rb
