@@ -1,6 +1,74 @@
 ---
 ---
 # Ruby on Rails Study Note
+## 環境構築（docker）
+## docker environment
+以下を準備する
+```
+docker-compose.yaml
+Dockerfile
+Gemfile
+Gemfile.lock
+```
+- docker-compose.yaml
+```
+version: '3'
+
+services:
+  service:
+    build: .           #buildから実施
+    ports:             #-p ポートフォワーディング
+      - 3000:3000
+    volumes:
+      - .:/usr/src/app
+    tty: true          #-t ttyを割り当てます。
+    stdin_open: true   #-i STDINを開きます。
+```
+- Dockerfile
+```
+FROM ruby:3.0
+
+# throw errors if Gemfile has been modified since Gemfile.lock
+# RUN bundle config --global frozen 1
+
+WORKDIR /usr/src/app
+
+# copy Gemfile Gemfile.lock
+COPY Gemfile Gemfile.lock ./
+# install the Gems written in the Gemfile 
+RUN bundle install
+
+COPY . .
+
+# CMD ["./your-daemon-or-script.rb"]
+```
+- Gemfile
+```
+source 'https://rubygems.org'
+gem 'rails', '7.0.4'
+```
+- Gemfile.lock
+```
+(空)
+```
+コンテナ操作
+```
+# build
+docker-compose build
+# build & start
+docker-compose up -d
+# in container
+docker exec -it my_helloworld bash
+# make new hello_app in container
+rails new hello_app
+```
+### 余談
+Dockerfileはコンテナの中でbundle install（Gemfileの内容をもとにGemfile.lockが更新される）を行っています。
+もし、GemfileとGemfile.lockの内容がイコールのものを保有している場合、以下部分のコメントは外した形でのDockerfileで実施可能です。
+```
+RUN bundle config --global frozen 1
+```
+
 
 ## フォルダ構成
 ```
@@ -235,3 +303,4 @@ post.{カラム名}
 // データの最初のデータの値を取得
 {モデル名}.all[0].content
 ```
+
