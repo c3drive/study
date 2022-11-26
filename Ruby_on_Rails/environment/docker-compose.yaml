@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  service:
+    build: .           #buildから実施
+    ports:             #-p ポートフォワーディング
+      - 3000:3000
+    container_name: my_helloworld
+    volumes:
+      - .:/usr/src/app
+    tty: true          #-t ttyを割り当てます。
+    stdin_open: true   #-i STDINを開きます。
