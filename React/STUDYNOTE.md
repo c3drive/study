@@ -3,8 +3,15 @@
 # React Study Note
 ## Reactとは
 ユーザインタフェース構築のためのJavaScriptライブラリ
-
 [公式ドキュメント](https://ja.reactjs.org/tutorial/tutorial.html)
+
+render関数（ビューファイルをhtmlにレンダリングする機能）を中心に作られており、ページ内容が更新されるためにrender関数を呼び出し仮想的なページを構築し、最終的にDOMを変更します。
+この際、前回のDOMと今回のDOMを比較し必要最低限の更新のみ行われるため、パフォーマンスが維持されます。
+
+# JSX(JavaScript XML)
+JavaScriptのコードの中でXML風宣言的な記述を行うことができます。
+## JSXを利用しない場合
+JSXのマークアップ部分は最終的にJavaScriptに変換されるので、ReactではJSXを利用しないこともできますが、利用は推奨されています。
 
 ## 使い方
 1.Node.jsのインストール  
@@ -17,10 +24,9 @@ npx create-react-app {アプリケーション名}
 npx create-react-app {アプリケーション名} --templete typescript
 ```
 
-Create React Appはツールチェイン
-
-## 特徴
-Reactプロジェクトのソースコードは「JSX」（TypeScriptを使う場合はTSX）という言語で記述され、ブラウザで実行するためにJavaScriptへトランスパイルする。Create React Appは内部では、`Babel`と`Webpack`を利用しているためCreate React Appではなく個別にインストールしてゼロからJacaScriptツールチェインを設定した環境構築をすることも可能。
+## Create React App
+Create React Appはツールチェインです。
+Create React Appは内部では、`Babel`と`Webpack`を利用しているためCreate React Appではなく個別にインストールしてゼロからJacaScriptツールチェインを設定した環境構築をすることも可能です。
 
 ## 構造
 ```
@@ -76,6 +82,40 @@ index.html
 </html>
 
 ```
+
+## ライフサイクル
+### コンポーネント作成時
+必須なのはrenderのみです。
+- getDefaultProps（コンポーネント作成時のみ）  
+インスタンス作成時おやコンポーネントが値を指定しなかったとき使用される。コンポーネント作成時のみ呼ばれる
+
+- getInitialState  
+インスタンス作成時に状態を初期化。以降this.propsが利用可能になる。
+
+- componentWillMount  
+renderメソッドが呼び出される前にコンポーネントの状態を変更する
+
+- render  
+必須。コンポーネントの出力表現（仮想DOM）が作成される。
+
+- componentDidMount  
+React.findDOMNode経由で表示後のDOMにアクセスできる。
+表示後の要素の高さを測ったり、タイマーを設定したりする場合利用。
+
+### コンポーネント作成後
+この時点でコンポーネントは描画済みのため、ユーザはそれを操作することができる。
+- componentWillReceiveProps  
+親コンポーネントにより任意のタイミングでpropsを変更する際に呼ばれ、stateを変更したりその他の処理を行います。
+
+- shouldComponentUpdate  
+propsやstateが変更されたにもかかわらず、表示に影響しないことがわかっている場合falseを返します。
+renderやcomponentWillUpdateやcomponentDidUpdateをスキップすることができるので、処理速度が最適化できます。
+
+- componentWullUpdate  
+propsと　stateの変更による描画が行われる直前に呼び出されます。
+- render  
+- componentDidUpdate  
+表示後の要素の高さを測ったり、タイマーを設定したりする場合利用。
 
 ## イベント
 onClick()イベントの例

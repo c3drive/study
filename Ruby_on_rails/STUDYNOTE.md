@@ -51,7 +51,7 @@ gem 'rails', '7.0.4'
 ```
 (空)
 ```
-コンテナ操作
+- コンテナ操作
 ```
 # build
 docker-compose build
@@ -62,11 +62,21 @@ docker exec -it my_helloworld bash
 # make new hello_app in container
 rails new hello_app
 ```
-### 余談
-Dockerfileはコンテナの中でbundle install（Gemfileの内容をもとにGemfile.lockが更新される）を行っています。
-もし、GemfileとGemfile.lockの内容がイコールのものを保有している場合、以下部分のコメントは外した形でのDockerfileで実施可能です。
+-  余談
+以下は必要に応じてコメントアウト/インする
 ```
+# Gemfile.lock に変更は行われないし、行われるような変更を許容しなくなる
 RUN bundle config --global frozen 1
+```
+```
+# 1. Gemfile.lockのGemをインストール
+# 2. Gemfileのみ記載があるGemをインストール
+# 3. 2の内容をGemfile.lockへ追記
+RUN bundle install
+
+# 1. GemfileのGemをインストール
+# 2. 1の内容をGemfile.lockへ追記
+RUN bundle update
 ```
 
 
@@ -109,8 +119,10 @@ rails new {アプリケーション名}
 ```
 
 ### サーバー起動
+docker内の場合、`--binding=0.0.0.0`でないと外部のアクセスがリッスンできない
 ```
-rails server
+cd {アプリケーション名}
+rails server --binding=0.0.0.0
 ```
 作成されるURL：http://localhost:3000
 
