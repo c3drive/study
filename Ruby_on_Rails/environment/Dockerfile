@@ -7,7 +7,11 @@ WORKDIR /usr/src/app
 
 # copy Gemfile Gemfile.lock
 COPY Gemfile Gemfile.lock ./
+
+# without production group in Gemfile
+RUN bundle config set --local without 'production'
 # install the Gems written in the Gemfile 
+# /usr/local/bundle
 RUN bundle install
 
 COPY . .

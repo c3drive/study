@@ -116,6 +116,7 @@ RUN bundle update
 ### アプリケーション作成
 ```
 rails new {アプリケーション名}
+rails _7.0.4_ new {アプリケーション名} --skip-bundle
 ```
 
 ### サーバー起動
