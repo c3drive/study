@@ -26,7 +26,7 @@ npx create-react-app {アプリケーション名} --templete typescript
 
 ## Create React App
 Create React Appはツールチェインです。
-Create React Appは内部では、`Babel`と`Webpack`を利用しているためCreate React Appではなく個別にインストールしてゼロからJacaScriptツールチェインを設定した環境構築をすることも可能です。
+Create React Appは内部では、`Babel`と`Webpack`を利用しているためCreate React Appではなく個別にインストールしてゼロからJavaScriptツールチェインを設定した環境構築をすることも可能です。
 
 ## 構造
 ```
