@@ -10,7 +10,8 @@ Dockerfile
 Gemfile
 Gemfile.lock
 ```
-- docker-compose.yaml
+
+docker-compose.yaml
 ```
 version: '3'
 
@@ -24,7 +25,8 @@ services:
     tty: true          #-t ttyを割り当てます。
     stdin_open: true   #-i STDINを開きます。
 ```
-- Dockerfile
+
+Dockerfile
 ```
 FROM ruby:3.0
 
@@ -42,16 +44,19 @@ COPY . .
 
 # CMD ["./your-daemon-or-script.rb"]
 ```
-- Gemfile
+
+Gemfile
 ```
 source 'https://rubygems.org'
 gem 'rails', '7.0.4'
 ```
-- Gemfile.lock
+
+Gemfile.lock
 ```
 (空)
 ```
-- コンテナ操作
+
+コンテナ操作
 ```
 # build
 docker-compose build
@@ -62,7 +67,9 @@ docker exec -it my_helloworld bash
 # make new hello_app in container
 rails new hello_app
 ```
--  余談
+
+余談
+
 以下は必要に応じてコメントアウト/インする
 ```
 # Gemfile.lock に変更は行われないし、行われるような変更を許容しなくなる
@@ -78,7 +85,6 @@ RUN bundle install
 # 2. 1の内容をGemfile.lockへ追記
 RUN bundle update
 ```
-
 
 ## フォルダ構成
 ```
@@ -99,7 +105,7 @@ RUN bundle update
   |    └── controllers/    　　　　　// コントロールフォルダ
   |     　　└── home_controller.rb  // ■
   ├── config/ 　　　　　　　　　　　　 // 設定情報に関するフォルダ
-  |    └── routes.rb               // ■
+  |    └── routes.rb               // 
   ├── db/     　　　　　　　　　　　　 // データベースに関するフォルダ
   |    └── migrate/
   |     　　└── YYYYMMDDHHMMSS_create_posts.rb // ▲
@@ -111,6 +117,33 @@ RUN bundle update
 ■：`例）rails g controller home top`で作成されるもの
 ▲：`例）rails g model Post content:text`で作成されるもの
 
+## Railsルーター
+### URLを実際のコードに振り分ける
+`GET ./patients/17`というリクエストを受け取ったとき、特定のコントローラ内アクションにマッチさせる
+```
+get '/patients/:id', to: 'patients#show'
+```
+このリクエストは`patients`コントローラの`show`アクションに割り当てられ、`params`には`{ id: 17 }`ハッシュが含まれます。
+また、resourcesを宣言するだけで、コントローラのindex、show、new、edit、create、update、destroyアクションを個別に宣言しなくても1行で宣言が完了します。
+このアクションはRailsのデフォルトで、それ以外の`top`アクションを作りたいなどの場合は使えません。
+```
+resources :patients
+
+// 限定したい場合
+resource :patients, only: [:show]
+```
+collectionとmemberを使う
+```:ruby
+resources :patients [:show] do
+  collection do
+    get :import // URLは、#GET /patients/import
+  end
+  member do
+    put :renew // URLは、#PUT /patients/:id/renew
+  end
+end
+```
+参考：https://railsguides.jp/routing.html
 
 ## 各種操作
 ### アプリケーション作成
@@ -127,7 +160,7 @@ rails server --binding=0.0.0.0
 ```
 作成されるURL：http://localhost:3000
 
-### トップページの作成
+### アクションの作成
 ```
 rails generate controller {コントローラ名} {アクション名}
 // 例　rails generate controller home top
@@ -139,11 +172,13 @@ rails g controller {コントローラ名} {アクション名}
 作成されるURL：http://localhost:3000/home/top
 
 ### ページを構成するのに必要なもの
-- views  
-*.erbは、HTMLなどの文章の中にRubyスクリプトを埋め込むためのライブラリファイル
-```
-<h1>Home#top</h1>
-<p>Find me in app/views/home/top.html.erb</p>
+- routing  
+Rails内ではコントローラを経由してビューを返していますが、ブラウザとコントローラを繋ぐ役割を担うのがルーティングです。
+ページが表示されるまでに、ルーティング→コントローラ→ビューという順で処理が行われている
+```:routes.rb 
+Rails.application.routes.draw do
+  get "home/top" => "home#top" # GET /home/topというrequestがマッチ
+end
 ```
 
 - controller  
@@ -156,13 +191,11 @@ end
 ```
 `class A < B`は、クラスAがクラスBを継承している状態。
 
-- routing  
-Rails内ではコントローラを経由してビューを返していますが、ブラウザとコントローラを繋ぐ役割を担うのがルーティングです。
-ページが表示されるまでに、ルーティング→コントローラ→ビューという順で処理が行われている
-```:routes.rb 
-Rails.application.routes.draw do
-  get "home/top" => "home#top"
-end
+- views  
+*.erbは、HTMLなどの文章の中にRubyスクリプトを埋め込むためのライブラリファイル
+```
+<h1>Home#top</h1>
+<p>Find me in app/views/home/top.html.erb</p>
 ```
 
 ### ページの追加（既存のコントローラにアクションを追加する場合）
@@ -262,6 +295,42 @@ text：長い文字列
 - app/db/migrate/YYYYMMDDHHMMSS_create_posts.rb
 - app/models/post.rd
 
+データモデルとWebインターフェースを組み合わせてリソースとみなすと、HTTPプロトコル経由で自由に作成/取得/更新/削除できるオブジェクトとみなすことができるようになります。
+scaffoldジェネレータでリソースを作成することができます。
+```
+rails generate scaffold User name:string email:string
+      invoke  active_record
+      create    db/migrate/20230108040646_create_users.rb
+      create    app/models/user.rb
+      invoke    test_unit
+      create      test/models/user_test.rb
+      create      test/fixtures/users.yml
+      invoke  resource_route
+       route    resources :users
+      invoke  scaffold_controller
+      create    app/controllers/users_controller.rb
+      invoke    erb
+      create      app/views/users
+      create      app/views/users/index.html.erb
+      create      app/views/users/edit.html.erb
+      create      app/views/users/show.html.erb
+      create      app/views/users/new.html.erb
+      create      app/views/users/_form.html.erb
+      create      app/views/users/_user.html.erb
+      invoke    resource_route
+      invoke    test_unit
+      create      test/controllers/users_controller_test.rb
+      create      test/system/users_test.rb
+      invoke    helper
+      create      app/helpers/users_helper.rb
+      invoke      test_unit
+      invoke    jbuilder
+      create      app/views/users/index.json.jbuilder
+      create      app/views/users/show.json.jbuilder
+      create      app/views/users/_user.json.jbuilder
+```
+不要なファイルを作りたくない場合、config/application.rbに`g.{invoke} false`で制御可能
+
 ### データベースに反映
 ```
 rails db:migrate
@@ -288,7 +357,7 @@ quit
 ```
 
 ### データ保存
-モデルにて、`{モデル名}.new`でモデルのインスタンスを作成して対応するテーブルに保存する。
+controllerにて、`{モデル名}.new`でモデルのインスタンスを作成して対応するテーブルに保存する。
 ```
 // インスタンス作成
 post = {モデル名}.new(content: "Hello world")
@@ -317,3 +386,33 @@ post.{カラム名}
 {モデル名}.all[0].content
 ```
 
+### 入力制限を行う
+modelに以下を記載すると、contentは必須かつ140文字以上でエラーが出るようになります。
+```
+class Micropost < ApplicationRecord
+    validates :content, length: { maximum: 140 },
+                        presence: true
+end
+```
+
+## モデル同士の関連づけ
+一人のユーザが複数のポストを持つ場合
+```
+class User < ApplicationRecord
+  has_many :microposts
+end
+```
+```
+class Micropost < ApplicationRecord
+  belongs_to :user
+end
+```
+belongs_toにより関連づけられるのは、`user_id`ですが、これによりMicropostの`user_id`は必須項目になります。
+
+## Railsコンソールでアプリケーションの状態を調べる
+```
+rails console
+>> User.first // データベースからuserの一人目を取得
+>> first_user = User.first // データベースからuserの一人目を取得し、変数first_userに格納
+>> first_user.microposts // micropostsの一人目のポストを取得
+>> exit // console終了

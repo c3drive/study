@@ -1,3 +1,5 @@
+# visit site
+https://c3drive.github.io/study/
 # study note
 - [React](/React/STUDYNOTE.md)
 - [Ruby](/Ruby/STUDYNOTE.md)
